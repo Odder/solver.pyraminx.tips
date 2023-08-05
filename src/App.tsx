@@ -2,7 +2,7 @@ import * as React from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { pyraminxolver } from 'pyraminxolver';
+import pyraminxolver from './services/pyraminxolver/pyraminxolver';
 import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -34,8 +34,8 @@ export default function App() {
 
   React.useEffect(() => {
     const solutions = px.searchScramble(scramble.trim().toUpperCase(), slack);
-    solutions.sort((a: String, b: String) => scorers[scorer](parseAlg(a[0])) - scorers[scorer](parseAlg(b[0])));
-    setSolutions(solutions);
+    solutions.sort((a: any, b: any) => scorers[scorer](parseAlg(a[0])) - scorers[scorer](parseAlg(b[0])));
+    setSolutions(solutions as any[]);
   }, [scramble, slack]);
 
   React.useEffect(() => {
