@@ -40,8 +40,8 @@ const homeGripScorer = (alg: Alg): number => {
     "R'": 0.8,
     "L": 0.8,
     "L'": 0.8,
-    "B": 3,
-    "B'": 3,
+    "B": 1.5,
+    "B'": 1.5,
   }
   let lBalance = 0;
   let rBalance = 0;
@@ -52,13 +52,25 @@ const homeGripScorer = (alg: Alg): number => {
     cost = moveCosts[move]
     if (move === "U" || move === "U'") {
       uBalance += move === "U" ? 1 : -1;
-      cost *= (1 + Math.abs(uBalance) * 0.1) ** 2;
+      if (Math.abs(rBalance) > 0 && Math.abs(lBalance) > 0) {
+        cost += 1;
+      }
     } else if (move === "R" || move === "R'") {
       rBalance += move === "R" ? 1 : -1;
-      cost *= (1 + Math.abs(rBalance) * 0.1) ** 3;
+      if (Math.abs(rBalance) > 1) {
+        cost += 1;
+        rBalance = 0;
+      }
     } else if (move === "L" || move === "L'") {
       lBalance += move === "L" ? 1 : -1;
-      cost *= (1 + Math.abs(lBalance) * 0.1) ** 3;
+      if (Math.abs(lBalance) > 1) {
+        cost += 1.5;
+        lBalance = 0;
+      }
+    } else if (move === "B" || move === "B'") {
+      if (lBalance == 1 && rBalance == -1) {
+        cost += 0.5;
+      }
     }
 
     return acc + cost;
