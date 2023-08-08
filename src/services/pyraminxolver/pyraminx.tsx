@@ -41,6 +41,23 @@ function product(iterables: any, repeat: number) {
   }, [[]]);
 }
 
+function cartesian(...args: any[]) {
+  const r: any[] = []
+  const max = args.length - 1;
+  const helper = (arr: any[], i: number) => {
+    for (var j = 0, l = args[i].length; j < l; j++) {
+      var a = arr.slice(0); // clone arr
+      a.push(args[i][j]);
+      if (i == max)
+        r.push(a);
+      else
+        helper(a, i + 1);
+    }
+  }
+  helper([], 0);
+  return r;
+}
+
 const Pyraminx = () => {
   const ep: number[][] = [];
   const eo: number[][] = [];
@@ -140,12 +157,64 @@ const Pyraminx = () => {
     return property.some((mask) => mask(state));
   }
 
+  const generateSet = (setState: { eo: number[], co: number[], ep: number[] }) => {
+    console.info('generate set')
+    const eoSet: number[][] = [];
+    const coSet: number[][] = [];
+    const epSet: number[][] = [];
+
+    eo.forEach((eoCase: number[]) => {
+      for (let i = 0; i < 6; i++) {
+        if (setState.eo[i] > -1 && setState.eo[i] != eoCase[i]) {
+          return;
+        }
+      }
+      eoSet.push(eoCase);
+    })
+
+    co.forEach((coCase: number[]) => {
+      for (let i = 0; i < 4; i++) {
+        if (setState.co[i] > -1 && setState.co[i] != coCase[i]) {
+          return;
+        }
+      }
+      coSet.push(coCase);
+    })
+
+    ep.forEach((epCase: number[]) => {
+      for (let i = 0; i < 6; i++) {
+        if (setState.ep[i] > -1 && setState.ep[i] != epCase[i]) {
+          return;
+        }
+      }
+      epSet.push(epCase);
+    })
+
+    console.info('sets', eoSet, coSet, epSet)
+
+
+    const cases = cartesian(eoSet, coSet, epSet).map((state: any) => {
+      console.info('state', state)
+      return stateToId({
+        eo: state[0],
+        co: state[1],
+        ep: state[2],
+      });
+    })
+
+    console.info('cases', cases)
+
+    return cases;
+
+  }
+
   setup()
   return {
     stateToId,
     idToState,
     applyMove,
     hasProperty,
+    generateSet,
   }
 }
 

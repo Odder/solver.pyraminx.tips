@@ -2,31 +2,17 @@ import * as React from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import pyraminxolver from './services/pyraminxolver/pyraminxolver';
-import pyraminx, { Properties } from './services/pyraminxolver/pyraminx';
+import pyraminxolver from '../services/pyraminxolver/pyraminxolver';
+import pyraminx, { Properties } from '../services/pyraminxolver/pyraminx';
 import TextField from '@mui/material/TextField';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import Slider from '@mui/material/Slider';
-import Paper from '@mui/material/Paper';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { Chip, CssBaseline, Grid, Stack, ThemeProvider, createTheme } from '@mui/material';
-import { scorers, parseAlg } from './scorers/all';
+import { Chip, Stack } from '@mui/material';
+import { scorers, parseAlg } from '../scorers/all';
+import App from './App';
+import Navigation from '../components/Navigation';
+import SolutionsList from '../components/SolutionsList';
+import SolverSettingsForm from '../components/SolverSettingsForm';
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {'Copyright © Oscar Roth Andersen'}
-    </Typography>
-  );
-}
-
-export default function App() {
+export default function SingleSolverPage() {
   const [scramble, setScramble] = React.useState('');
   const [slack, setSlack] = React.useState(0);
   const [solutions, setSolutions] = React.useState([] as any[]);
@@ -64,7 +50,7 @@ export default function App() {
     const twisty = document.getElementsByTagName('twisty-player')[0] as any;
     if (twisty) {
       let callback: any;
-      twisty.experimentalModel.coarseTimelineInfo.addFreshListener(async (info: any) => {
+      twisty?.experimentalModel?.coarseTimelineInfo.addFreshListener(async (info: any) => {
         if (info.atEnd && !info.atStart && info.playing === false) {
           if (callback) {
             clearTimeout(callback);
@@ -85,20 +71,9 @@ export default function App() {
     twisty.play();
   }
 
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const theme = React.useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode: prefersDarkMode ? 'dark' : 'dark',
-        },
-      }),
-    [prefersDarkMode],
-  );
-
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <App>
+      <Navigation></Navigation>
       <Container maxWidth="sm">
         <Stack direction="column" spacing={4}>
           <Box sx={{ my: 4 }}>
@@ -124,37 +99,10 @@ export default function App() {
             }}
               inputProps={{ style: { textTransform: "uppercase" } }} />
           </Box>
-          <Box>
-            <Grid container spacing={4}>
-              <Grid item xs={12} sm={8} md={8}>
-
-                <InputLabel>Slack</InputLabel>
-                <Slider
-                  aria-label="slack"
-                  defaultValue={0}
-                  valueLabelDisplay="auto"
-                  step={1}
-                  marks
-                  min={0}
-                  max={4}
-                  onChange={(event: Event, value: number | number[]) => setSlack(value as number)}
-                />
-              </Grid>
-              <Grid item xs={12} sm={4} md={4}>
-                <InputLabel id="demo-simple-select-filled-label">Scorer</InputLabel>
-                <Select
-                  labelId="demo-simple-select-filled-label"
-                  id="demo-simple-select-filled"
-                  value={scorer}
-                  onChange={(event: SelectChangeEvent) => setScorer(event.target.value as string)}
-                >
-                  <MenuItem value="lengthScorer">Move Count</MenuItem>
-                  <MenuItem value="naiveScorer">Weighted Moves</MenuItem>
-                  <MenuItem value="homeGripScorer">Home Grip</MenuItem>
-                </Select>
-              </Grid>
-            </Grid>
-          </Box>
+          <SolverSettingsForm
+            scorer={scorer}
+            setScorer={setScorer}
+            setSlack={setSlack}></SolverSettingsForm>
           <Box>
             <Stack direction="row" justifyContent="center" spacing={2}>
               {Object.keys(Properties).map((key) => {
@@ -164,31 +112,12 @@ export default function App() {
               })}
             </Stack>
           </Box>
-          <Paper elevation={2}>
-            {solutions.length ?
-              <List>
-                {solutions.map((solution) => {
-                  return (
-                    <ListItem key={`solution-${solution[0]}`}>
-                      <ListItemButton onClick={() => displayAlg(solution[0])}>
-                        <ListItemText
-                          primary={`${solution[0]} (${scorers[scorer](parseAlg(solution[0])).toFixed(2)})`}
-                        />
-                      </ListItemButton>
-                    </ListItem>
-                  )
-                })}
-              </List>
-              : <List>
-                <ListItem>
-                  <ListItemText
-                    primary="No solutions found"
-                  />
-                </ListItem></List>}
-          </Paper>
-          <Copyright />
+          <SolutionsList
+            solutions={solutions}
+            scorer={scorer}
+            displayAlg={displayAlg}></SolutionsList>
         </Stack>
       </Container >
-    </ThemeProvider >
+    </App>
   );
 }
