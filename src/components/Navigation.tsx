@@ -15,7 +15,7 @@ import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 const pages = [
   {
     id: '',
-    name: 'Solver',
+    name: 'State Solver',
   },
   {
     id: 'set',

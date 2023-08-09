@@ -18,6 +18,7 @@ export default function SetSolverPage() {
   const [cases, setCases] = React.useState<number[]>([]);
   const [slack, setSlack] = React.useState(0);
   const [scramble, setScramble] = React.useState<string>('');
+  const [caseMask, setCaseMask] = React.useState<string>('');
   const [solutions, setSolutions] = React.useState([] as any[]);
   const [scorer, setScorer] = React.useState('homeGripScorer' as string);
   const [stateIdx, setStateIdx] = React.useState(0 as number);
@@ -44,6 +45,7 @@ export default function SetSolverPage() {
     const cornerMask = [co[0], co[2], co[3], co[1]].map((value) => value ? '-' : 'I').join('');
     const edgeMask = [2, 0, 4, 3, 5, 1].map((value) => ep[state.ep.indexOf(value)] ? '-' : 'I').join('');
     const mask = `CORNERS:${cornerMask},CORNERS2:${cornerMask},EDGES:${edgeMask}`;
+    setCaseMask(mask.replace(/-/g, 'D').replace(/I/g, '-'));
     twisty.experimentalStickeringMaskOrbits = mask;
 
     setCases(pyra.generateSet(
@@ -194,6 +196,7 @@ export default function SetSolverPage() {
               scorer={scorer}
               slack={slack}
               title={index + 1}
+              mask={caseMask}
             ></CaseCard>
           ))}
           {cases.length > 10 && <Pagination count={Math.ceil(cases.length / 10)} page={page} onChange={handlePageChange} />}

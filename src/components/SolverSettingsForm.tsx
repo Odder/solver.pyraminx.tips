@@ -5,13 +5,16 @@ import InputLabel from '@mui/material/InputLabel';
 import Slider from '@mui/material/Slider';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import Tooltip from '@mui/material/Tooltip';
 
 export default function SolverSettingsForm({ setSlack, setScorer, scorer }: { setSlack: (slack: number) => void, setScorer: (scorer: string) => void, scorer: string }) {
   return (
     <Box>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={8} md={8}>
-          <InputLabel>Slack</InputLabel>
+          <Tooltip title="The depth of the search. How many moves from optimal solution do you want to search?">
+            <InputLabel>Slack</InputLabel>
+          </Tooltip>
           <Slider
             aria-label="slack"
             defaultValue={0}
@@ -24,7 +27,9 @@ export default function SolverSettingsForm({ setSlack, setScorer, scorer }: { se
           />
         </Grid>
         <Grid item xs={12} sm={4} md={4}>
-          <InputLabel id="demo-simple-select-filled-label">Scorer</InputLabel>
+          <Tooltip title="How do you want to rank/sort the solutions found?">
+            <InputLabel id="demo-simple-select-filled-label">Scorer</InputLabel>
+          </Tooltip>
           <Select
             labelId="demo-simple-select-filled-label"
             id="demo-simple-select-filled"

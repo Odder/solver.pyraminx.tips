@@ -5,7 +5,7 @@ import { scorers, parseAlg } from '../scorers/all';
 import CardMedia from '@mui/material/CardMedia';
 import SolutionsList from './SolutionsList';
 
-export default function CaseCard({ state, px, scorer, slack, title }: { state: number, px: any, scorer: string, slack: number, title: any }) {
+export default function CaseCard({ state, px, scorer, slack, title, mask }: { state: number, px: any, scorer: string, slack: number, title: any, mask: string }) {
   const [solutions, setSolutions] = React.useState([] as any[]);
   const [showAll, setShowAll] = React.useState(false);
 
@@ -48,6 +48,7 @@ export default function CaseCard({ state, px, scorer, slack, title }: { state: n
         camera-latitude-limit="90"
         camera-latitude="80"
         id={`twisty-player-${state}`}
+        experimental-stickering-mask-orbits={mask}
       />
       <CardContent sx={{ flexGrow: 1 }}>
         <SolutionsList
