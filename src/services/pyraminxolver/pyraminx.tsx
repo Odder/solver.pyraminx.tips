@@ -157,11 +157,14 @@ const Pyraminx = () => {
     return property.some((mask) => mask(state));
   }
 
-  const generateSet = (setState: { eo: number[], co: number[], ep: number[] }) => {
-    console.info('generate set')
+  const generateSet = (setState: { eo: number[], co: number[], ep: number[] }, stateIdx: number) => {
+    const startCase = idToState(stateIdx);
     const eoSet: number[][] = [];
     const coSet: number[][] = [];
     const epSet: number[][] = [];
+    setState.ep = [0, 1, 2, 3, 4, 5].map((i) => setState.ep[i] > -1 ? startCase.ep[i] : -1);
+    setState.eo = [0, 1, 2, 3, 4, 5].map((i) => setState.ep[i] > -1 ? startCase.eo[i] : -1);
+    setState.co = [0, 1, 2, 3].map((i) => setState.co[i] > -1 ? startCase.co[i] : -1);
 
     eo.forEach((eoCase: number[]) => {
       for (let i = 0; i < 6; i++) {
@@ -190,19 +193,13 @@ const Pyraminx = () => {
       epSet.push(epCase);
     })
 
-    console.info('sets', eoSet, coSet, epSet)
-
-
     const cases = cartesian(eoSet, coSet, epSet).map((state: any) => {
-      console.info('state', state)
       return stateToId({
         eo: state[0],
         co: state[1],
         ep: state[2],
       });
     })
-
-    console.info('cases', cases)
 
     return cases;
 

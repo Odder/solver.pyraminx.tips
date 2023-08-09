@@ -35,7 +35,7 @@ export default function Navigation() {
   };
 
   return (
-    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    <AppBar position="sticky" sx={{marginBottom: '30px'}}>
       <Toolbar disableGutters>
         <AutoStoriesIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, ml: 2 }} />
         <Typography

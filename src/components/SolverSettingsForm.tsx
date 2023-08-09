@@ -6,7 +6,7 @@ import Slider from '@mui/material/Slider';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-export default function SolverSettingsForm({ setSlack, setScorer, scorer }: { setSlack: (slack: number) => void, setScorer: (scorer: string) => void, scorer: string}) {
+export default function SolverSettingsForm({ setSlack, setScorer, scorer }: { setSlack: (slack: number) => void, setScorer: (scorer: string) => void, scorer: string }) {
   return (
     <Box>
       <Grid container spacing={4}>
@@ -19,7 +19,7 @@ export default function SolverSettingsForm({ setSlack, setScorer, scorer }: { se
             step={1}
             marks
             min={0}
-            max={4}
+            max={3}
             onChange={(event: Event, value: number | number[]) => setSlack(value as number)}
           />
         </Grid>

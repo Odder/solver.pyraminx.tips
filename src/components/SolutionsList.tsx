@@ -7,12 +7,14 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
 export default function SolutionsList({ solutions, scorer, displayAlg }: { solutions: any[], scorer: string, displayAlg: (alg: string) => void }) {
+  const [showAll, setShowAll] = React.useState(false);
+  const showLimit = 5;
 
   return (
     <Paper elevation={2}>
       {solutions.length ?
         <List>
-          {solutions.map((solution) => {
+          {solutions.slice(0, showAll ? solutions.length : showLimit).map((solution) => {
             return (
               <ListItem key={`solution-${solution[0]}`}>
                 <ListItemButton onClick={() => displayAlg(solution[0])}>
@@ -23,11 +25,29 @@ export default function SolutionsList({ solutions, scorer, displayAlg }: { solut
               </ListItem>
             )
           })}
+          {!showAll && solutions.length > showLimit &&
+            <ListItem>
+              <ListItemButton onClick={() => setShowAll(true)}>
+                <ListItemText
+                  secondary={`See all ${solutions.length} solutions`}
+                />
+              </ListItemButton>
+            </ListItem>
+          }
+          {showAll && solutions.length > showLimit &&
+            <ListItem>
+              <ListItemButton onClick={() => setShowAll(false)}>
+                <ListItemText
+                  secondary={`Show less solutions`}
+                />
+              </ListItemButton>
+            </ListItem>
+          }
         </List>
         : <List>
           <ListItem>
             <ListItemText
-              primary="No solutions found"
+              secondary="No solutions found"
             />
           </ListItem></List>}
     </Paper>

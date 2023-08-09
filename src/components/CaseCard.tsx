@@ -7,6 +7,7 @@ import SolutionsList from './SolutionsList';
 
 export default function CaseCard({ state, px, scorer, slack, title }: { state: number, px: any, scorer: string, slack: number, title: any }) {
   const [solutions, setSolutions] = React.useState([] as any[]);
+  const [showAll, setShowAll] = React.useState(false);
 
   React.useEffect(() => {
     if (!px) return;

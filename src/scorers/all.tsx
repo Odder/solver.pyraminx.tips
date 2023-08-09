@@ -34,8 +34,8 @@ const naiveScorer = (alg: Alg): number => {
 
 const homeGripScorer = (alg: Alg): number => {
   const moveCosts = {
-    "U": 0.7,
-    "U'": 0.7,
+    "U": 0.8,
+    "U'": 0.8,
     "R": 0.8,
     "R'": 0.8,
     "L": 0.8,

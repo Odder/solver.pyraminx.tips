@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import pyraminxolver from '../services/pyraminxolver/pyraminxolver';
 import pyraminx from '../services/pyraminxolver/pyraminx';
-import { Checkbox, FormControlLabel, FormGroup, Stack } from '@mui/material';
+import { Checkbox, FormControlLabel, FormGroup, Pagination, Stack, TextField } from '@mui/material';
 import { scorers, parseAlg } from '../scorers/all';
 import App from './App';
 import Navigation from '../components/Navigation';
@@ -12,14 +12,16 @@ import SolverSettingsForm from '../components/SolverSettingsForm';
 import CaseCard from '../components/CaseCard';
 
 export default function SetSolverPage() {
-  const [eo, setEo] = React.useState([1, 1, 1, 1, 1, 1] as number[]);
-  const [ep, setEp] = React.useState([1, 1, 1, 1, 1, 1] as number[]);
-  const [co, setCo] = React.useState([1, 1, 1, 1] as number[]);
-  const [cases, setCases] = React.useState([] as number[]);
+  const [eo, setEo] = React.useState([1, 1, 1, 1, 1, 1]);
+  const [ep, setEp] = React.useState([1, 1, 1, 1, 1, 1]);
+  const [co, setCo] = React.useState([1, 1, 1, 1]);
+  const [cases, setCases] = React.useState<number[]>([]);
   const [slack, setSlack] = React.useState(0);
+  const [scramble, setScramble] = React.useState<string>('');
   const [solutions, setSolutions] = React.useState([] as any[]);
   const [scorer, setScorer] = React.useState('homeGripScorer' as string);
   const [stateIdx, setStateIdx] = React.useState(0 as number);
+  const [page, setPage] = React.useState(1 as number);
   const [px, setPx] = React.useState(null as any);
   const pyra = pyraminx()
 
@@ -32,9 +34,15 @@ export default function SetSolverPage() {
 
   React.useEffect(() => {
     if (!px) return;
+    setStateIdx(px.scrambleToState(scramble.trim().toUpperCase()));
+  }, [scramble]);
+
+  React.useEffect(() => {
+    if (!px) return;
     const twisty = document.getElementsByTagName('twisty-player')[0] as any;
-    const cornerMask = [co[0], co[1], co[2], co[3]].map((value) => value ? '-' : 'I').join('');
-    const edgeMask = [ep[2], ep[0], ep[4], ep[3], ep[5], ep[1]].map((value) => value ? '-' : 'I').join('');
+    const state = pyra.idToState(stateIdx);
+    const cornerMask = [co[0], co[2], co[3], co[1]].map((value) => value ? '-' : 'I').join('');
+    const edgeMask = [2, 0, 4, 3, 5, 1].map((value) => ep[state.ep.indexOf(value)] ? '-' : 'I').join('');
     const mask = `CORNERS:${cornerMask},CORNERS2:${cornerMask},EDGES:${edgeMask}`;
     twisty.experimentalStickeringMaskOrbits = mask;
 
@@ -43,9 +51,10 @@ export default function SetSolverPage() {
         eo: ep.map((value) => value ? 0 : -1),
         ep: ep.map((value, i) => value ? i : -1),
         co: co.map((value) => value ? 0 : -1),
-      }
+      },
+      stateIdx,
     ));
-  }, [eo, ep, co]);
+  }, [eo, ep, co, stateIdx]);
 
   React.useEffect(() => {
     if (!px) return;
@@ -96,6 +105,10 @@ export default function SetSolverPage() {
     setEp([...localEp]);
   }
 
+  const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+    setPage(page);
+  }
+
 
   const displayAlg = (alg: string) => {
     const twisty = document.getElementsByTagName('twisty-player')[0] as any;
@@ -111,7 +124,7 @@ export default function SetSolverPage() {
         <Stack direction="column" spacing={4}>
           <Box sx={{ my: 4 }}>
             <Typography variant="h4" component="h1" gutterBottom textAlign="center">
-              Pyraminx Solver
+              Set Solver
             </Typography>
             <twisty-player
               style={{ width: "100%" }}
@@ -123,6 +136,17 @@ export default function SetSolverPage() {
               background="none"
               camera-latitude-limit="90"
               camera-latitude="80"> </twisty-player>
+          </Box>
+
+          <TextField sx={{ width: "100%" }} id="outlined-basic" label="Setup" variant="outlined" value={scramble} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            const twisty = document.getElementsByTagName('twisty-player')[0] as any;
+            if (solutions[0] && solutions[0][0] && solutions[0][0] !== twisty.attributes.alg.value) {
+              twisty.alg = solutions[0][0];
+            }
+            setScramble(event.target.value)
+          }}
+            inputProps={{ style: { textTransform: "uppercase" } }} />
+          <Box>
             <Stack direction="column" spacing={4}>
               <FormGroup>
                 <Typography variant="h6" component="h1" gutterBottom textAlign="center">Edges</Typography>
@@ -148,9 +172,9 @@ export default function SetSolverPage() {
                 <Typography variant="h6" component="h1" gutterBottom textAlign="center">Centers</Typography>
                 <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
                   <FormControlLabel control={<Checkbox checked={!!co[0]} onChange={handleCOChange(0)} />} label="U" />
-                  <FormControlLabel control={<Checkbox checked={!!co[1]} onChange={handleCOChange(1)} />} label="R" />
-                  <FormControlLabel control={<Checkbox checked={!!co[2]} onChange={handleCOChange(2)} />} label="L" />
-                  <FormControlLabel control={<Checkbox checked={!!co[3]} onChange={handleCOChange(3)} />} label="B" />
+                  <FormControlLabel control={<Checkbox checked={!!co[3]} onChange={handleCOChange(3)} />} label="R" />
+                  <FormControlLabel control={<Checkbox checked={!!co[1]} onChange={handleCOChange(1)} />} label="L" />
+                  <FormControlLabel control={<Checkbox checked={!!co[2]} onChange={handleCOChange(2)} />} label="B" />
                 </Stack>
               </FormGroup></Stack>
           </Box>
@@ -158,17 +182,21 @@ export default function SetSolverPage() {
             scorer={scorer}
             setScorer={setScorer}
             setSlack={setSlack}></SolverSettingsForm>
-          {cases.map((state, index) => (
+          <Box>
+            <Typography variant="h6" component="h5" gutterBottom textAlign="center">{cases.length} cases</Typography>
+          </Box>
+          {cases.length > 10 && <Pagination count={Math.ceil(cases.length / 10)} page={page} onChange={handlePageChange} />}
+          {cases.slice((page - 1) * 10, (page) * 10).map((state, index) => (
             <CaseCard
-              key={`case-${index}`}
+              key={state}
               state={state}
               px={px}
               scorer={scorer}
               slack={slack}
               title={index + 1}
             ></CaseCard>
-          ))
-          }
+          ))}
+          {cases.length > 10 && <Pagination count={Math.ceil(cases.length / 10)} page={page} onChange={handlePageChange} />}
         </Stack>
       </Container >
     </App>
