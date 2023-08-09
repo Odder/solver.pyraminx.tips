@@ -42,7 +42,7 @@ export default function SetSolverPage() {
     if (!px) return;
     const twisty = document.getElementsByTagName('twisty-player')[0] as any;
     const state = pyra.idToState(stateIdx);
-    const cornerMask = [co[0], co[2], co[3], co[1]].map((value) => value ? '-' : 'I').join('');
+    const cornerMask = [co[0], co[3], co[1], co[2]].map((value) => value ? '-' : 'I').join('');
     const edgeMask = [2, 0, 4, 3, 5, 1].map((value) => ep[state.ep.indexOf(value)] ? '-' : 'I').join('');
     const mask = `CORNERS:${cornerMask},CORNERS2:${cornerMask},EDGES:${edgeMask}`;
     setCaseMask(mask.replace(/-/g, 'D').replace(/I/g, '-'));
@@ -70,24 +70,6 @@ export default function SetSolverPage() {
   React.useEffect(() => {
     setPx(pyraminxolver());
   }, []);
-
-  React.useEffect(() => {
-    const twisty = document.getElementsByTagName('twisty-player')[0] as any;
-    if (twisty) {
-      let callback: any;
-      twisty?.experimentalModel?.coarseTimelineInfo.addFreshListener(async (info: any) => {
-        if (info.atEnd && !info.atStart && info.playing === false) {
-          if (callback) {
-            clearTimeout(callback);
-          }
-          callback = () => {
-            twisty.timestamp = 0;
-          }
-          setTimeout(callback, 700);
-        }
-      });
-    }
-  }, [px]);
 
   const handleEOChange = (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
     const localEo = [...eo];
@@ -174,9 +156,9 @@ export default function SetSolverPage() {
                 <Typography variant="h6" component="h1" gutterBottom textAlign="center">Centers</Typography>
                 <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
                   <FormControlLabel control={<Checkbox checked={!!co[0]} onChange={handleCOChange(0)} />} label="U" />
-                  <FormControlLabel control={<Checkbox checked={!!co[3]} onChange={handleCOChange(3)} />} label="R" />
-                  <FormControlLabel control={<Checkbox checked={!!co[1]} onChange={handleCOChange(1)} />} label="L" />
-                  <FormControlLabel control={<Checkbox checked={!!co[2]} onChange={handleCOChange(2)} />} label="B" />
+                  <FormControlLabel control={<Checkbox checked={!!co[1]} onChange={handleCOChange(1)} />} label="R" />
+                  <FormControlLabel control={<Checkbox checked={!!co[2]} onChange={handleCOChange(2)} />} label="L" />
+                  <FormControlLabel control={<Checkbox checked={!!co[3]} onChange={handleCOChange(3)} />} label="B" />
                 </Stack>
               </FormGroup></Stack>
           </Box>
