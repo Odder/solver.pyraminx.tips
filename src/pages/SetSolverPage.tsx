@@ -19,7 +19,7 @@ const defaultParams = {
   ep: [1, 1, 1, 1, 1, 1],
   co: [1, 1, 1, 1],
   slack: 0,
-  setup: [],
+  setup: '',
   scorer: 'Home Grip',
 }
 
@@ -83,7 +83,7 @@ export default function SetSolverPage() {
           co: co,
           slack: slack,
           scorer: scorer,
-          setup: scramble.toUpperCase(),
+          setup: scramble ? scramble.toUpperCase() : '',
         }),
       }
     );

@@ -50,7 +50,7 @@ const decoder = (rawState: string): state => {
   const state = decode(rawState);
 
   const getSetup = () => {
-    if (state.length < 4) return '';
+    if (state.length < 5) return '';
     const moves = ["R", "R'", "L", "L'", "U", "U'", "B", "B'"];
     const setup = [moves[state[4] >> 3]];
     let a = '';
