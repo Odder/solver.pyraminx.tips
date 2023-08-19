@@ -10,7 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import BiotechIcon from '@mui/icons-material/Biotech';
 
 const pages = [
   {
@@ -35,9 +35,9 @@ export default function Navigation() {
   };
 
   return (
-    <AppBar position="sticky" sx={{marginBottom: '30px'}}>
+    <AppBar position="sticky" sx={{ marginBottom: '30px' }}>
       <Toolbar disableGutters>
-        <AutoStoriesIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, ml: 2 }} />
+        <BiotechIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, ml: 2 }} />
         <Typography
           variant="h6"
           noWrap

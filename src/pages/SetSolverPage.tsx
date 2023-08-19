@@ -4,26 +4,43 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import pyraminxolver from '../services/pyraminxolver/pyraminxolver';
 import pyraminx from '../services/pyraminxolver/pyraminx';
-import { Checkbox, FormControlLabel, FormGroup, Pagination, Stack, TextField } from '@mui/material';
+import { Checkbox, Fab, FormControlLabel, FormGroup, Pagination, Stack, TextField } from '@mui/material';
 import { scorers, parseAlg } from '../scorers/all';
 import App from './App';
+import HelpIcon from '@mui/icons-material/Help';
 import Navigation from '../components/Navigation';
 import SolverSettingsForm from '../components/SolverSettingsForm';
 import CaseCard from '../components/CaseCard';
+import SetStatisticsDialog from '../components/SetStatisticsDialog';
+import { useSearchParams } from 'react-router-dom';
+import PyraState from '../services/pyrastate/pyrastate';
+
+const defaultParams = {
+  ep: [1, 1, 1, 1, 1, 1],
+  co: [1, 1, 1, 1],
+  slack: 0,
+  setup: [],
+  scorer: 'Home Grip',
+}
 
 export default function SetSolverPage() {
+  const [params, setParams] = useSearchParams();
+  const initialParams = params.get('state') ? PyraState.decode(params.get('state') as string) : defaultParams;
+
   const [eo, setEo] = React.useState([1, 1, 1, 1, 1, 1]);
-  const [ep, setEp] = React.useState([1, 1, 1, 1, 1, 1]);
-  const [co, setCo] = React.useState([1, 1, 1, 1]);
+  const [ep, setEp] = React.useState(initialParams.ep);
+  const [co, setCo] = React.useState(initialParams.co);
   const [cases, setCases] = React.useState<number[]>([]);
-  const [slack, setSlack] = React.useState(0);
-  const [scramble, setScramble] = React.useState<string>('');
+  const [slack, setSlack] = React.useState(initialParams.slack);
+  const [scramble, setScramble] = React.useState<string>(initialParams.setup);
   const [caseMask, setCaseMask] = React.useState<string>('');
   const [solutions, setSolutions] = React.useState([] as any[]);
-  const [scorer, setScorer] = React.useState('homeGripScorer' as string);
+  const [scorer, setScorer] = React.useState(params.get('scorer') ?? 'Home Grip' as string);
   const [stateIdx, setStateIdx] = React.useState(0 as number);
-  const [page, setPage] = React.useState(1 as number);
+  const [page, setPage] = React.useState(parseInt(params.get('slack') ?? '1'));
   const [px, setPx] = React.useState(null as any);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [shareDialogOpen, setShareDialogOpen] = React.useState(false);
   const pyra = pyraminx()
 
   React.useEffect(() => {
@@ -36,7 +53,7 @@ export default function SetSolverPage() {
   React.useEffect(() => {
     if (!px) return;
     setStateIdx(px.scrambleToState(scramble.trim().toUpperCase()));
-  }, [scramble]);
+  }, [scramble, px]);
 
   React.useEffect(() => {
     if (!px) return;
@@ -57,6 +74,20 @@ export default function SetSolverPage() {
       stateIdx,
     ));
   }, [eo, ep, co, stateIdx]);
+
+  React.useEffect(() => {
+    setParams(
+      {
+        state: PyraState.encode({
+          ep: ep,
+          co: co,
+          slack: slack,
+          scorer: scorer,
+          setup: scramble.toUpperCase(),
+        }),
+      }
+    );
+  }, [ep, co, slack, scramble, scorer, page]);
 
   React.useEffect(() => {
     if (!px) return;
@@ -165,9 +196,19 @@ export default function SetSolverPage() {
           <SolverSettingsForm
             scorer={scorer}
             setScorer={setScorer}
+            slack={slack}
             setSlack={setSlack}></SolverSettingsForm>
           <Box>
-            <Typography variant="h6" component="h5" gutterBottom textAlign="center">{cases.length} cases</Typography>
+            <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
+              <Typography variant="h6" component="h5" gutterBottom textAlign="center">{cases.length} cases</Typography>
+              <HelpIcon onClick={() => setDialogOpen(true)} sx={{ cursor: 'pointer' }}></HelpIcon>
+            </Stack>
+            <SetStatisticsDialog
+              open={dialogOpen}
+              cases={cases}
+              px={px}
+              slack={slack}
+              handleClose={() => setDialogOpen(false)}></SetStatisticsDialog>
           </Box>
           {cases.length > 10 && <Pagination count={Math.ceil(cases.length / 10)} page={page} onChange={handlePageChange} />}
           {cases.slice((page - 1) * 10, (page) * 10).map((state, index) => (
@@ -183,7 +224,8 @@ export default function SetSolverPage() {
           ))}
           {cases.length > 10 && <Pagination count={Math.ceil(cases.length / 10)} page={page} onChange={handlePageChange} />}
         </Stack>
+
       </Container >
-    </App>
+    </App >
   );
 }

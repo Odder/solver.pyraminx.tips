@@ -16,7 +16,7 @@ export default function SingleSolverPage() {
   const [scramble, setScramble] = React.useState('');
   const [slack, setSlack] = React.useState(0);
   const [solutions, setSolutions] = React.useState([] as any[]);
-  const [scorer, setScorer] = React.useState('homeGripScorer' as string);
+  const [scorer, setScorer] = React.useState('Home Grip' as string);
   const [stateIdx, setStateIdx] = React.useState(0 as number);
   const [px, setPx] = React.useState(null as any);
   const pyra = pyraminx()
@@ -40,7 +40,6 @@ export default function SingleSolverPage() {
       twisty.alg = solutions[0][0];
     }
   }, [solutions]);
-
 
   React.useEffect(() => {
     setPx(pyraminxolver());
@@ -101,6 +100,7 @@ export default function SingleSolverPage() {
           </Box>
           <SolverSettingsForm
             scorer={scorer}
+            slack={slack}
             setScorer={setScorer}
             setSlack={setSlack}></SolverSettingsForm>
           <Box>

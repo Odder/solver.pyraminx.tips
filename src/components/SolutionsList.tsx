@@ -16,10 +16,11 @@ export default function SolutionsList({ solutions, scorer, displayAlg }: { solut
         <List>
           {solutions.slice(0, showAll ? solutions.length : showLimit).map((solution) => {
             return (
-              <ListItem key={`solution-${solution[0]}`}>
+              <ListItem key={`solutions-${solution[0]}`}>
                 <ListItemButton onClick={() => displayAlg(solution[0])}>
                   <ListItemText
-                    primary={`${solution[0]} (${scorers[scorer](parseAlg(solution[0])).toFixed(2)})`}
+                    primary={solution[0]}
+                    secondary={`(${scorers[scorer](parseAlg(solution[0])).toFixed(2)})`}
                   />
                 </ListItemButton>
               </ListItem>

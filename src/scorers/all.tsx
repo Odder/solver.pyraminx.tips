@@ -78,7 +78,7 @@ const homeGripScorer = (alg: Alg): number => {
 }
 
 export const scorers: { [key: string]: (alg: Alg) => number } = {
-  lengthScorer,
-  naiveScorer,
-  homeGripScorer,
+  'Move Count': lengthScorer,
+  'Weighted Moves': naiveScorer,
+  'Home Grip': homeGripScorer,
 }

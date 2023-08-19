@@ -7,7 +7,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 
-export default function SolverSettingsForm({ setSlack, setScorer, scorer }: { setSlack: (slack: number) => void, setScorer: (scorer: string) => void, scorer: string }) {
+export default function SolverSettingsForm({ setSlack, setScorer, scorer, slack }: { setSlack: (slack: number) => void, setScorer: (scorer: string) => void, scorer: string, slack: number }) {
   return (
     <Box>
       <Grid container spacing={4}>
@@ -23,6 +23,7 @@ export default function SolverSettingsForm({ setSlack, setScorer, scorer }: { se
             marks
             min={0}
             max={3}
+            value={slack}
             onChange={(event: Event, value: number | number[]) => setSlack(value as number)}
           />
         </Grid>
@@ -36,9 +37,9 @@ export default function SolverSettingsForm({ setSlack, setScorer, scorer }: { se
             value={scorer}
             onChange={(event: SelectChangeEvent) => setScorer(event.target.value as string)}
           >
-            <MenuItem value="lengthScorer">Move Count</MenuItem>
-            <MenuItem value="naiveScorer">Weighted Moves</MenuItem>
-            <MenuItem value="homeGripScorer">Home Grip</MenuItem>
+            <MenuItem value="Move Count">Move Count</MenuItem>
+            <MenuItem value="Weighted Moves">Weighted Moves</MenuItem>
+            <MenuItem value="Home Grip">Home Grip</MenuItem>
           </Select>
         </Grid>
       </Grid>
