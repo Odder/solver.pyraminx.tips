@@ -31,7 +31,7 @@ export default () => {
         }
       }
       else {
-        solutions.push([parseMoves(moves), moves.length])
+        solutions.push([parseMoves(moves), moves.length, visited])
       }
     }
 

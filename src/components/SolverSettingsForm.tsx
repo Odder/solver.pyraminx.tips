@@ -11,7 +11,7 @@ export default function SolverSettingsForm({ setSlack, setScorer, scorer, slack 
   return (
     <Box>
       <Grid container spacing={4}>
-        <Grid item xs={12} sm={8} md={8}>
+        <Grid item xs={12} sm={12} md={12}>
           <Tooltip title="The depth of the search. How many moves from optimal solution do you want to search?">
             <InputLabel>Slack</InputLabel>
           </Tooltip>

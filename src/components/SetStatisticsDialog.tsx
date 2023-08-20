@@ -3,7 +3,7 @@ import Dialog from '@mui/material/Dialog';
 import { Button, DialogActions, DialogContent, DialogTitle, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { scorers, parseAlg } from '../scorers/all';
 
-export default function SolutionsList({ cases, open, px, slack, handleClose }: { cases: any[], open: boolean, px: any, slack: number, handleClose: () => void }) {
+export default function SetStatisticsDialog({ cases, open, px, slack, handleClose }: { cases: any[], open: boolean, px: any, slack: number, handleClose: () => void }) {
   const [stats, setStats] = React.useState<any>(Object.keys(scorers).map((scorer) => { return { scorer: scorer, stats: null } }));
 
   React.useEffect(() => {

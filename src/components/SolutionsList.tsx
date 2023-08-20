@@ -5,37 +5,62 @@ import ListItem from '@mui/material/ListItem';
 import { scorers, parseAlg } from '../scorers/all';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import detect from '../services/pyraminxolver/methodDetector';
+import { Chip } from '@mui/material';
 
-export default function SolutionsList({ solutions, scorer, displayAlg }: { solutions: any[], scorer: string, displayAlg: (alg: string) => void }) {
+export default function SolutionsList({ solutions, scorer, state, displayAlg, pyra, filterComputerSolves}: { solutions: any[], scorer: string, state: number, displayAlg: (alg: string) => void, pyra: any, filterComputerSolves?: boolean }) {
   const [showAll, setShowAll] = React.useState(false);
   const showLimit = 5;
+  const filteredSolutions = solutions.filter((s) => {
+    if (filterComputerSolves) {
+      return !!detect(pyra, state, s[2]);;
+    }
+    return true;
+  });
+
+  const methodChip = (solution: any) => {
+    const method = detect(pyra, state, solution[2]);
+    if (method) {
+      return (
+        <Chip 
+          label={method}
+          size="small"
+          sx={{ marginLeft: 'auto' }}
+          color="primary"
+        ></Chip>
+      );
+    }
+    return (<></>);
+  }
 
   return (
     <Paper elevation={2}>
-      {solutions.length ?
+      {filteredSolutions.length ?
         <List>
-          {solutions.slice(0, showAll ? solutions.length : showLimit).map((solution) => {
+          {filteredSolutions.slice(0, showAll ? filteredSolutions.length : showLimit).map((solution) => {
             return (
-              <ListItem key={`solutions-${solution[0]}`}>
+              <ListItem key={`solutions - ${solution[0]} `}>
                 <ListItemButton onClick={() => displayAlg(solution[0])}>
                   <ListItemText
                     primary={solution[0]}
-                    secondary={`(${scorers[scorer](parseAlg(solution[0])).toFixed(2)})`}
+                    secondary={`${scorers[scorer](parseAlg(solution[0])).toFixed(2)}`}
                   />
+                  
+                {methodChip(solution)}
                 </ListItemButton>
               </ListItem>
             )
           })}
-          {!showAll && solutions.length > showLimit &&
+          {!showAll && filteredSolutions.length > showLimit &&
             <ListItem>
               <ListItemButton onClick={() => setShowAll(true)}>
                 <ListItemText
-                  secondary={`See all ${solutions.length} solutions`}
+                  secondary={`See all ${filteredSolutions.length} solutions`}
                 />
               </ListItemButton>
             </ListItem>
           }
-          {showAll && solutions.length > showLimit &&
+          {showAll && filteredSolutions.length > showLimit &&
             <ListItem>
               <ListItemButton onClick={() => setShowAll(false)}>
                 <ListItemText

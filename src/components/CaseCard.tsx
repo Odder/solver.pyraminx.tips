@@ -5,7 +5,7 @@ import { scorers, parseAlg } from '../scorers/all';
 import CardMedia from '@mui/material/CardMedia';
 import SolutionsList from './SolutionsList';
 
-export default function CaseCard({ state, px, scorer, slack, title, mask }: { state: number, px: any, scorer: string, slack: number, title: any, mask: string }) {
+export default function CaseCard({ state, px, pyra, scorer, slack, title, mask }: { state: number, px: any, pyra: any, scorer: string, slack: number, title: any, mask: string }) {
   const [solutions, setSolutions] = React.useState([] as any[]);
 
   React.useEffect(() => {
@@ -53,6 +53,8 @@ export default function CaseCard({ state, px, scorer, slack, title, mask }: { st
         <SolutionsList
           solutions={px.search(state, slack).sort((a: any, b: any) => scorers[scorer](parseAlg(a[0])) - scorers[scorer](parseAlg(b[0])))}
           scorer={scorer}
+          state={state}
+          pyra={pyra}
           displayAlg={displayAlg}
         ></SolutionsList>
       </CardContent>

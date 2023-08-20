@@ -215,6 +215,7 @@ export default function SetSolverPage() {
               key={state}
               state={state}
               px={px}
+              pyra={pyra}
               scorer={scorer}
               slack={slack}
               title={index + 1}
