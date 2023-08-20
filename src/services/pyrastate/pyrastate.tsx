@@ -1,37 +1,20 @@
 import { scorers } from "../../scorers/all";
 
 
-const movesMap = ["U", "U'", "R", "R'", "L", "L'", "B", "B'"];
-const movesTable = movesMap.reduce(
-  (acc: any, c: string, i: number) => {
-    acc[c] = i;
-    return acc;
-  }
-  , {});
-
+const moves = ["U", "U'", "R", "R'", "L", "L'", "B", "B'"];
 const alphabet = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_';
-// from python:  table = {c: i for (i, c) in enumerate(ALPHABET)}
 const table = alphabet.split('').reduce(
   (acc: any, c: string, i: number) => {
     acc[c] = i;
     return acc;
-  }
-  , {});
+  }, {});
 
-const encode = (x: Array<number>) => {
-  let result = '';
-  for (let i = 0; i < x.length; i++) {
-    result += alphabet[x[i]];
-  }
-  return result;
+const encode64 = (x: Array<number>) => {
+  return x.reduce((acc, n) => acc += alphabet[n], '');
 }
 
-const decode = (x: string) => {
-  let result: Array<number> = [];
-  for (let i = 0; i < x.length; i++) {
-    result.push(table[x[i]]);
-  }
-  return result;
+const decode64 = (x: string): Array<number> => {
+  return x.split('').map(n => table[n]);
 }
 
 type state = {
@@ -43,15 +26,27 @@ type state = {
 }
 
 const decoder = (rawState: string): state => {
+  const state = decode64(rawState);
+  switch (state[0]) {
+    case 0:
+      return decoderV1(rawState);
+  }
+  throw new Error('This encoding version is not supported');
+}
+
+const encoder = (rawState: state) => {
+  return encoderV1(rawState);
+}
+
+const decoderV1 = (rawState: string): state => {
   if (rawState.length < 3) {
     throw new Error("Invalid PyraState");
   }
 
-  const state = decode(rawState);
+  const state = decode64(rawState);
 
   const getSetup = () => {
     if (state.length < 5) return '';
-    const moves = ["R", "R'", "L", "L'", "U", "U'", "B", "B'"];
     const setup = [moves[state[4] >> 3]];
     let a = '';
     let b = '';
@@ -77,9 +72,8 @@ const decoder = (rawState: string): state => {
   };
 }
 
-const encoder = (rawState: state) => {
+const encoderV1 = (rawState: state) => {
   const state = [];
-  const moves = ["R", "R'", "L", "L'", "U", "U'", "B", "B'"];
 
   state.push(0);
   state.push(rawState.ep.reduce((acc, x, i) => acc + (x << i), 0));
@@ -103,7 +97,7 @@ const encoder = (rawState: state) => {
     }
   }
 
-  return encode(state);
+  return encode64(state);
 }
 
 const PyraState = {

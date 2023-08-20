@@ -40,7 +40,6 @@ export default function SetSolverPage() {
   const [page, setPage] = React.useState(parseInt(params.get('slack') ?? '1'));
   const [px, setPx] = React.useState(null as any);
   const [dialogOpen, setDialogOpen] = React.useState(false);
-  const [shareDialogOpen, setShareDialogOpen] = React.useState(false);
   const pyra = pyraminx()
 
   React.useEffect(() => {
@@ -73,7 +72,7 @@ export default function SetSolverPage() {
       },
       stateIdx,
     ));
-  }, [eo, ep, co, stateIdx]);
+  }, [eo, ep, co, stateIdx, px]);
 
   React.useEffect(() => {
     setParams(
