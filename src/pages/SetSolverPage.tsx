@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import pyraminxolver from '../services/pyraminxolver/pyraminxolver';
 import pyraminx from '../services/pyraminxolver/pyraminx';
-import { Checkbox, Fab, FormControlLabel, FormGroup, Pagination, Stack, TextField } from '@mui/material';
+import { Checkbox, Drawer, Fab, FormControlLabel, FormGroup, Pagination, Stack, Switch, TextField, Toolbar } from '@mui/material';
 import { scorers, parseAlg } from '../scorers/all';
 import App from './App';
 import HelpIcon from '@mui/icons-material/Help';
@@ -40,6 +40,8 @@ export default function SetSolverPage() {
   const [page, setPage] = React.useState(parseInt(params.get('slack') ?? '1'));
   const [px, setPx] = React.useState(null as any);
   const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [filterBadAlgs, setFilterBadAlgs] = React.useState(false);
+  const [groupBySymmetry, setGroupBySymmetry] = React.useState(false);
   const pyra = pyraminx()
 
   React.useEffect(() => {
@@ -71,6 +73,7 @@ export default function SetSolverPage() {
         co: co.map((value) => value ? 0 : -1),
       },
       stateIdx,
+      // groupBySymmetry
     ));
   }, [eo, ep, co, stateIdx, px]);
 
@@ -134,69 +137,97 @@ export default function SetSolverPage() {
   return (
     <App>
       <Navigation></Navigation>
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: 300,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: { width: 300, boxSizing: 'border-box' },
+          display: { xs: 'none', md: 'flex' }
+        }}
+      >
+        <Box padding={4}>
+          <Toolbar />
+
+          <Box sx={{ overflow: 'auto' }}>
+          </Box>
+          <Stack direction="column" spacing={4}>
+
+            <Box sx={{ my: 4 }}>
+              <twisty-player
+                style={{ width: "100%" }}
+                puzzle="pyraminx"
+                alg=""
+                hint-facelets="floating"
+                experimental-setup-anchor="end"
+                control-panel="none"
+                background="none"
+                camera-latitude-limit="90"
+                camera-latitude="80"> </twisty-player>
+            </Box>
+            <TextField sx={{ width: "100%" }} id="outlined-basic" label="Setup" variant="outlined" value={scramble} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              const twisty = document.getElementsByTagName('twisty-player')[0] as any;
+              if (solutions[0] && solutions[0][0] && solutions[0][0] !== twisty.attributes.alg.value) {
+                twisty.alg = solutions[0][0];
+              }
+              setScramble(event.target.value)
+            }}
+              inputProps={{ style: { textTransform: "uppercase" } }} />
+            <Box>
+              <Stack direction="column" spacing={4}>
+                <FormGroup>
+                  <Typography variant="h6" component="h1" gutterBottom textAlign="center">Edges</Typography>
+                  <Stack direction="row" alignItems="center" justifyContent="center" flexWrap="wrap">
+                    <FormControlLabel control={<Checkbox checked={!!ep[0]} onChange={handleEPChange(0)} />} label="UB" />
+                    <FormControlLabel control={<Checkbox checked={!!ep[1]} onChange={handleEPChange(1)} />} label="UR" />
+                    <FormControlLabel control={<Checkbox checked={!!ep[2]} onChange={handleEPChange(2)} />} label="UL" />
+                    <FormControlLabel control={<Checkbox checked={!!ep[3]} onChange={handleEPChange(3)} />} label="BR" />
+                    <FormControlLabel control={<Checkbox checked={!!ep[4]} onChange={handleEPChange(4)} />} label="RL" />
+                    <FormControlLabel control={<Checkbox checked={!!ep[5]} onChange={handleEPChange(5)} />} label="BL" />
+                  </Stack>
+                </FormGroup>
+                <FormGroup>
+                  <Typography variant="h6" component="h1" gutterBottom textAlign="center">Centers</Typography>
+                  <Stack direction="row" alignItems="center" justifyContent="center">
+                    <FormControlLabel control={<Checkbox checked={!!co[0]} onChange={handleCOChange(0)} />} label="U" />
+                    <FormControlLabel control={<Checkbox checked={!!co[1]} onChange={handleCOChange(1)} />} label="R" />
+                    <FormControlLabel control={<Checkbox checked={!!co[2]} onChange={handleCOChange(2)} />} label="L" />
+                    <FormControlLabel control={<Checkbox checked={!!co[3]} onChange={handleCOChange(3)} />} label="B" />
+                  </Stack>
+                </FormGroup></Stack>
+            </Box>
+            <SolverSettingsForm
+              scorer={scorer}
+              setScorer={setScorer}
+              slack={slack}
+              setSlack={setSlack}
+              filterBadAlgs={filterBadAlgs}
+              setFilterBadAlgs={setFilterBadAlgs}
+            ></SolverSettingsForm>
+            {/* <FormGroup>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={groupBySymmetry}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setGroupBySymmetry(event.target.checked) }}
+                    inputProps={{ 'aria-label': 'controlled' }}
+                  />
+                }
+                label={
+                  <Typography variant="body2" color="text.secondary">
+                    Group by Symmetry
+                  </Typography>
+                } />
+            </FormGroup> */}
+
+          </Stack>
+        </Box>
+      </Drawer>
       <Container maxWidth="sm">
         <Stack direction="column" spacing={4}>
-          <Box sx={{ my: 4 }}>
-            <Typography variant="h4" component="h1" gutterBottom textAlign="center">
-              Set Solver
-            </Typography>
-            <twisty-player
-              style={{ width: "100%" }}
-              puzzle="pyraminx"
-              alg=""
-              hint-facelets="floating"
-              experimental-setup-anchor="end"
-              control-panel="none"
-              background="none"
-              camera-latitude-limit="90"
-              camera-latitude="80"> </twisty-player>
-          </Box>
-
-          <TextField sx={{ width: "100%" }} id="outlined-basic" label="Setup" variant="outlined" value={scramble} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-            const twisty = document.getElementsByTagName('twisty-player')[0] as any;
-            if (solutions[0] && solutions[0][0] && solutions[0][0] !== twisty.attributes.alg.value) {
-              twisty.alg = solutions[0][0];
-            }
-            setScramble(event.target.value)
-          }}
-            inputProps={{ style: { textTransform: "uppercase" } }} />
-          <Box>
-            <Stack direction="column" spacing={4}>
-              <FormGroup>
-                <Typography variant="h6" component="h1" gutterBottom textAlign="center">Edges</Typography>
-                <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
-                  <FormControlLabel control={<Checkbox checked={!!ep[0]} onChange={handleEPChange(0)} />} label="UB" />
-                  <FormControlLabel control={<Checkbox checked={!!ep[1]} onChange={handleEPChange(1)} />} label="UR" />
-                  <FormControlLabel control={<Checkbox checked={!!ep[2]} onChange={handleEPChange(2)} />} label="UL" />
-                  <FormControlLabel control={<Checkbox checked={!!ep[3]} onChange={handleEPChange(3)} />} label="BR" />
-                  <FormControlLabel control={<Checkbox checked={!!ep[4]} onChange={handleEPChange(4)} />} label="RL" />
-                  <FormControlLabel control={<Checkbox checked={!!ep[5]} onChange={handleEPChange(5)} />} label="BL" />
-                </Stack>
-              </FormGroup>
-              {/* <FormGroup>
-                <Typography variant="h6" component="h1" gutterBottom textAlign="center">Edge Orientation</Typography>
-                <FormControlLabel control={<Checkbox checked={!!eo[0]} onChange={handleEOChange(0)} />} label="UB" />
-                <FormControlLabel control={<Checkbox checked={!!eo[1]} onChange={handleEOChange(1)} />} label="UR" />
-                <FormControlLabel control={<Checkbox checked={!!eo[2]} onChange={handleEOChange(2)} />} label="UL" />
-                <FormControlLabel control={<Checkbox checked={!!eo[3]} onChange={handleEOChange(3)} />} label="BR" />
-                <FormControlLabel control={<Checkbox checked={!!eo[4]} onChange={handleEOChange(4)} />} label="RL" />
-                <FormControlLabel control={<Checkbox checked={!!eo[5]} onChange={handleEOChange(5)} />} label="BL" />
-              </FormGroup> */}
-              <FormGroup>
-                <Typography variant="h6" component="h1" gutterBottom textAlign="center">Centers</Typography>
-                <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
-                  <FormControlLabel control={<Checkbox checked={!!co[0]} onChange={handleCOChange(0)} />} label="U" />
-                  <FormControlLabel control={<Checkbox checked={!!co[1]} onChange={handleCOChange(1)} />} label="R" />
-                  <FormControlLabel control={<Checkbox checked={!!co[2]} onChange={handleCOChange(2)} />} label="L" />
-                  <FormControlLabel control={<Checkbox checked={!!co[3]} onChange={handleCOChange(3)} />} label="B" />
-                </Stack>
-              </FormGroup></Stack>
-          </Box>
-          <SolverSettingsForm
-            scorer={scorer}
-            setScorer={setScorer}
-            slack={slack}
-            setSlack={setSlack}></SolverSettingsForm>
+          <Typography variant="h4" component="h1" gutterBottom textAlign="center">
+            Set Solver
+          </Typography>
           <Box>
             <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
               <Typography variant="h6" component="h5" gutterBottom textAlign="center">{cases.length} cases</Typography>
@@ -220,11 +251,11 @@ export default function SetSolverPage() {
               slack={slack}
               title={index + 1}
               mask={caseMask}
+              filterBadAlgs={filterBadAlgs}
             ></CaseCard>
           ))}
           {cases.length > 10 && <Pagination count={Math.ceil(cases.length / 10)} page={page} onChange={handlePageChange} />}
         </Stack>
-
       </Container >
     </App >
   );

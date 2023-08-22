@@ -157,6 +157,20 @@ const Pyraminx = () => {
     return property.some((mask) => mask(state));
   }
 
+  // const groupBySymmetry = (cases: Array<number>) => {
+  //   const groups = {};
+  //   cases.forEach(
+  //     (stateIdx: number) => {
+  //       const state = idToState(stateIdx);
+  //       let sibling = [1, 2, 0, 3, 4, 5]
+  //       sibling = map
+  //       const groupName = [state, idToState];
+        
+  //       if (
+  //   );
+  //   const symmetries = [];
+  // }
+
   const generateSet = (setState: { eo: number[], co: number[], ep: number[] }, stateIdx: number) => {
     const startCase = idToState(stateIdx);
     const eoSet: number[][] = [];
@@ -251,6 +265,31 @@ const generateGraph = () => {
   console.timeEnd("Graph solved in");
 
   return graph;
+}
+
+const translateRotations = (state: any): Array<any> => {
+  const rotations = [
+    [[0, 1, 2, 3, 4, 5], [0, 1, 2, 3]], // []
+    [[2, 0, 1, 5, 3, 4], [0, 3, 1, 2]], // [U]
+    [[1, 2, 0, 4, 5, 3], [0, 2, 3, 1]], // [U']
+    [[2, 4, 5, 1, 3, 0], [2, 1, 3, 0]], // [R]
+    [[5, 2, 4, 0, 1, 3], [2, 0, 1, 3]], // [R U]
+    [[4, 5, 2, 3, 0, 1], [2, 3, 0, 1]], // [R U']
+    [[5, 3, 0, 4, 1, 2], [3, 1, 0, 2]], // [R']
+    [[0, 5, 3, 2, 4, 1], [3, 2, 1, 0]], // [R' U]
+    [[3, 0, 5, 1, 2, 4], [3, 0, 2, 1]], // [R' U']
+    [[1, 3, 4, 0, 5, 2], [1, 3, 2, 0]], // [L']
+    [[4, 1, 3, 2, 0, 5], [1, 0, 3, 2]], // [L']
+    [[3, 4, 1, 5, 2, 0], [1, 2, 0, 3]], // [L']
+  ]
+
+  return rotations.map((rotation) => {
+    return {
+      eo: rotation[0].map((i: number) => state.eo[i]).map((i: number) => state.eo[i]),
+      co: rotation[1].map((i: number) => state.co[i]).map((i: number) => state.co[i]),
+      ep: rotation[0].map((i: number) => state.ep[i]).map((i: number) => rotation[0].indexOf(i)),
+    }
+  });
 }
 
 type mask = (s: any) => boolean;

@@ -19,6 +19,7 @@ export default function SingleSolverPage() {
   const [scorer, setScorer] = React.useState('Home Grip' as string);
   const [stateIdx, setStateIdx] = React.useState(0 as number);
   const [filterComputerSolves, setFilterComputerSolves] = React.useState(false);
+  const [filterBadAlgs, setFilterBadAlgs] = React.useState(false);
   const [px, setPx] = React.useState(null as any);
   const pyra = pyraminx()
 
@@ -112,8 +113,10 @@ export default function SingleSolverPage() {
             <SolverSettingsForm
               scorer={scorer}
               slack={slack}
+              filterBadAlgs={filterBadAlgs}
               setScorer={setScorer}
-              setSlack={setSlack}></SolverSettingsForm>
+              setSlack={setSlack}
+              setFilterBadAlgs={setFilterBadAlgs}></SolverSettingsForm>
             <FormGroup>
               <FormControlLabel
                 control={

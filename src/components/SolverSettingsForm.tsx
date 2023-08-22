@@ -6,10 +6,13 @@ import Slider from '@mui/material/Slider';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
+import { FormControlLabel, FormGroup, Stack, Switch, Typography } from '@mui/material';
 
-export default function SolverSettingsForm({ setSlack, setScorer, scorer, slack }: { setSlack: (slack: number) => void, setScorer: (scorer: string) => void, scorer: string, slack: number }) {
+export default function SolverSettingsForm({ setSlack, setScorer, setFilterBadAlgs, scorer, slack, filterBadAlgs }: { setSlack: (slack: number) => void, setScorer: (scorer: string) => void, setFilterBadAlgs: (filter: boolean) => void, scorer: string, slack: number, filterBadAlgs: boolean }) {
+
+
   return (
-    <Box>
+    <Stack direction="row">
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={12}>
           <Tooltip title="The depth of the search. How many moves from optimal solution do you want to search?">
@@ -42,7 +45,25 @@ export default function SolverSettingsForm({ setSlack, setScorer, scorer, slack 
             <MenuItem value="Home Grip">Home Grip</MenuItem>
           </Select>
         </Grid>
+
+        <Grid item xs={12} sm={12} md={12}>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={filterBadAlgs}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setFilterBadAlgs(event.target.checked) }}
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+              }
+              label={
+                <Typography variant="body2" color="text.secondary">
+                  Only show good algs
+                </Typography>
+              } />
+          </FormGroup>
+        </Grid>
       </Grid>
-    </Box>
+    </Stack>
   );
 }

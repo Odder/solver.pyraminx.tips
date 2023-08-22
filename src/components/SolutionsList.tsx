@@ -8,12 +8,17 @@ import ListItemText from '@mui/material/ListItemText';
 import detect from '../services/pyraminxolver/methodDetector';
 import { Chip } from '@mui/material';
 
-export default function SolutionsList({ solutions, scorer, state, displayAlg, pyra, filterComputerSolves}: { solutions: any[], scorer: string, state: number, displayAlg: (alg: string) => void, pyra: any, filterComputerSolves?: boolean }) {
+export default function SolutionsList({ solutions, scorer, state, displayAlg, pyra, filterComputerSolves, filterBadAlgs }: { solutions: any[], scorer: string, state: number, displayAlg: (alg: string) => void, pyra: any, filterComputerSolves?: boolean, filterBadAlgs?: boolean }) {
   const [showAll, setShowAll] = React.useState(false);
-  const showLimit = 5;
+  const showLimit = 3;
   const filteredSolutions = solutions.filter((s) => {
     if (filterComputerSolves) {
       return !!detect(pyra, state, s[2]);;
+    }
+    return true;
+  }).filter((s) => {
+    if (filterBadAlgs) {
+      return scorers[scorer](parseAlg(s[0])) <= scorers[scorer](parseAlg(solutions[0][0])) + 1;
     }
     return true;
   });
@@ -22,7 +27,7 @@ export default function SolutionsList({ solutions, scorer, state, displayAlg, py
     const method = detect(pyra, state, solution[2]);
     if (method) {
       return (
-        <Chip 
+        <Chip
           label={method}
           size="small"
           sx={{ marginLeft: 'auto' }}
@@ -45,8 +50,8 @@ export default function SolutionsList({ solutions, scorer, state, displayAlg, py
                     primary={solution[0]}
                     secondary={`${scorers[scorer](parseAlg(solution[0])).toFixed(2)}`}
                   />
-                  
-                {methodChip(solution)}
+
+                  {methodChip(solution)}
                 </ListItemButton>
               </ListItem>
             )
