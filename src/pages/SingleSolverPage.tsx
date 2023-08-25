@@ -6,22 +6,36 @@ import pyraminxolver from '../services/pyraminxolver/pyraminxolver';
 import pyraminx, { Properties } from '../services/pyraminxolver/pyraminx';
 import TextField from '@mui/material/TextField';
 import { Chip, Drawer, FormControlLabel, FormGroup, Stack, Switch, Toolbar } from '@mui/material';
-import { scorers, parseAlg } from '../scorers/all';
+import { scorers, parseAlg } from '../services/scorers/all';
 import App from './App';
 import Navigation from '../components/Navigation';
 import SolutionsList from '../components/SolutionsList';
 import SolverSettingsForm from '../components/SolverSettingsForm';
+import usePyraminxStore from '../stores/usePyraminxStore';
+import usePyraSettingsStore from '../stores/usePyraSettingsStore';
 
 export default function SingleSolverPage() {
-  const [scramble, setScramble] = React.useState('');
-  const [slack, setSlack] = React.useState(0);
+  // const [scramble, setScramble] = React.useState('');
+  // const [slack, setSlack] = React.useState(0);
   const [solutions, setSolutions] = React.useState([] as any[]);
-  const [scorer, setScorer] = React.useState('Home Grip' as string);
+  // const [scorer, setScorer] = React.useState('Home Grip' as string);
   const [stateIdx, setStateIdx] = React.useState(0 as number);
-  const [filterComputerSolves, setFilterComputerSolves] = React.useState(false);
-  const [filterBadAlgs, setFilterBadAlgs] = React.useState(false);
-  const [px, setPx] = React.useState(null as any);
-  const pyra = pyraminx()
+  // const [filterComputerSolves, setFilterComputerSolves] = React.useState(false);
+  // const [filterBadAlgs, setFilterBadAlgs] = React.useState(false);
+
+  const {
+    setup: scramble,
+    slack,
+    scorer,
+    filterComputerSolves,
+    setSetup: setScramble,
+    setSlack,
+    setScorer,
+    setFilterComputerSolves,
+  } = usePyraSettingsStore((state) => state);
+
+  const pyra = usePyraminxStore((state: any) => state.pyra);
+  const px = usePyraminxStore((state: any) => state.pyraminXolver);
 
   React.useEffect(() => {
     if (!px) return;
@@ -42,10 +56,6 @@ export default function SingleSolverPage() {
       twisty.alg = solutions[0][0];
     }
   }, [solutions]);
-
-  React.useEffect(() => {
-    setPx(pyraminxolver());
-  }, []);
 
   React.useEffect(() => {
     const twisty = document.getElementsByTagName('twisty-player')[0] as any;
@@ -110,13 +120,7 @@ export default function SingleSolverPage() {
               }}
                 inputProps={{ style: { textTransform: "uppercase" } }} />
             </Box>
-            <SolverSettingsForm
-              scorer={scorer}
-              slack={slack}
-              filterBadAlgs={filterBadAlgs}
-              setScorer={setScorer}
-              setSlack={setSlack}
-              setFilterBadAlgs={setFilterBadAlgs}></SolverSettingsForm>
+            <SolverSettingsForm />
             <FormGroup>
               <FormControlLabel
                 control={
@@ -167,11 +171,13 @@ export default function SingleSolverPage() {
               scorer={scorer}
               slack={slack}
               setScorer={setScorer}
-              setSlack={setSlack}></SolverSettingsForm>
+              setSlack={setSlack}
+              filterBadAlgs={false}
+              setFilterBadAlgs={() => { }}></SolverSettingsForm>
             <Box>
               <Stack direction="row" justifyContent="center" spacing={2}>
                 {Object.keys(Properties).map((key) => {
-                  if (pyra.hasProperty(stateIdx, Properties[key as keyof typeof Properties])) {
+                  if (pyra?.hasProperty(stateIdx, Properties[key as keyof typeof Properties])) {
                     return <Chip color="secondary" key={key} label={key} />
                   }
                 })}
@@ -182,7 +188,6 @@ export default function SingleSolverPage() {
             solutions={solutions}
             scorer={scorer}
             state={stateIdx}
-            pyra={pyra}
             filterComputerSolves={filterComputerSolves}
             displayAlg={displayAlg}></SolutionsList>
         </Stack>

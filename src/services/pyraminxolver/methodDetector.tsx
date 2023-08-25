@@ -16,8 +16,8 @@ const detect = (pyra: any, state: number, path: Array<number>) => {
   }
 
   const methods: Array<[string, () => Boolean]> = [
-    ['V First', vFirst],
     ['Top First', topFirst],
+    ['V First', vFirst],
     ['LBL', layerByLayer],
   ];
 

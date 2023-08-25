@@ -1,4 +1,4 @@
-import { scorers } from "../../scorers/all";
+import { scorers } from "../scorers/all";
 
 
 const moves = ["U", "U'", "R", "R'", "L", "L'", "B", "B'"];
@@ -19,13 +19,16 @@ const decode64 = (x: string): Array<number> => {
 
 type state = {
   setup: string,
-  ep: Array<number>,
-  co: Array<number>,
+  fixedEdges: Array<number>,
+  fixedCenters: Array<number>,
   slack: number,
   scorer: string,
+  filterComputerSolves: boolean,
+  filterBadAlgs: boolean,
 }
 
 const decoder = (rawState: string): state => {
+  console.log('decoder')
   const state = decode64(rawState);
   switch (state[0]) {
     case 0:
@@ -51,7 +54,7 @@ const decoderV1 = (rawState: string): state => {
     let a = '';
     let b = '';
 
-    for (let i = 0; i < state[4] % 8; i++) {
+    for (let i = 0; i < state[5] % 8; i++) {
       a = moves[state[5 + i] % 8];
       b = moves[state[5 + i] >> 3];
       setup.push(a);
@@ -64,21 +67,24 @@ const decoderV1 = (rawState: string): state => {
   };
 
   return {
-    ep: [0, 1, 2, 3, 4, 5].map(x => state[1] & (1 << x) ? 1 : 0),
-    co: [0, 1, 2, 3].map(x => state[2] & (1 << x) ? 1 : 0),
+    fixedEdges: [0, 1, 2, 3, 4, 5].map(x => state[1] & (1 << x) ? 1 : 0),
+    fixedCenters: [0, 1, 2, 3].map(x => state[2] & (1 << x) ? 1 : 0),
     slack: (state[2] >> 4) % (2 ** 2),
     scorer: Object.keys(scorers)[state[3] % 2 ** 3],
     setup: getSetup(),
+    filterComputerSolves: state[3] & (1 << 3) ? true : false,
+    filterBadAlgs: state[3] & (1 << 4) ? true : false,
   };
 }
 
 const encoderV1 = (rawState: state) => {
   const state = [];
+  console.log('encoder')
 
   state.push(0);
-  state.push(rawState.ep.reduce((acc, x, i) => acc + (x << i), 0));
-  state.push(rawState.co.reduce((acc, x, i) => acc + (x << i), 0) + (rawState.slack << 4));
-  state.push(Object.keys(scorers).indexOf(rawState.scorer));
+  state.push(rawState.fixedEdges.reduce((acc, x, i) => acc + (x << i), 0));
+  state.push(rawState.fixedCenters.reduce((acc, x, i) => acc + (x << i), 0) + (rawState.slack << 4));
+  state.push(Object.keys(scorers).indexOf(rawState.scorer) + (rawState.filterComputerSolves ? 1 << 3 : 0) + (rawState.filterBadAlgs ? 1 << 4 : 0));
   if (rawState.setup && rawState.setup != '') {
     let moveCount = 0;
     let moveBuffer = Math.floor((rawState.setup.split(' ').length) / 2);

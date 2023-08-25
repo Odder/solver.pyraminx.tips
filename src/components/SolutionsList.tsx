@@ -2,15 +2,24 @@ import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { scorers, parseAlg } from '../scorers/all';
+import { scorers, parseAlg } from '../services/scorers/all';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import detect from '../services/pyraminxolver/methodDetector';
 import { Chip } from '@mui/material';
+import usePyraminxStore from '../stores/usePyraminxStore';
+import usePyraSettingsStore from '../stores/usePyraSettingsStore';
 
-export default function SolutionsList({ solutions, scorer, state, displayAlg, pyra, filterComputerSolves, filterBadAlgs }: { solutions: any[], scorer: string, state: number, displayAlg: (alg: string) => void, pyra: any, filterComputerSolves?: boolean, filterBadAlgs?: boolean }) {
+export default function SolutionsList({ solutions, state, displayAlg }: { solutions: any[], state: number, displayAlg: (alg: string) => void }) {
   const [showAll, setShowAll] = React.useState(false);
   const showLimit = 3;
+  const {
+    scorer,
+    filterBadAlgs,
+    filterComputerSolves,
+  } = usePyraSettingsStore((state) => state);
+  const pyra = usePyraminxStore((state) => state.pyraminx);
+
   const filteredSolutions = solutions.filter((s) => {
     if (filterComputerSolves) {
       return !!detect(pyra, state, s[2]);;

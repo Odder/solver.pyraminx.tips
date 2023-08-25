@@ -58,6 +58,7 @@ function cartesian(...args: any[]) {
   return r;
 }
 
+
 const Pyraminx = () => {
   const ep: number[][] = [];
   const eo: number[][] = [];

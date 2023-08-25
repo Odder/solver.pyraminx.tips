@@ -1,12 +1,20 @@
 import * as React from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { scorers, parseAlg } from '../scorers/all';
+import { scorers, parseAlg } from '../services/scorers/all';
 import CardMedia from '@mui/material/CardMedia';
 import SolutionsList from './SolutionsList';
+import usePyraminxStore from '../stores/usePyraminxStore';
+import usePyraSettingsStore from '../stores/usePyraSettingsStore';
 
-export default function CaseCard({ state, px, pyra, scorer, slack, title, mask, filterBadAlgs }: { state: number, px: any, pyra: any, scorer: string, slack: number, title: any, mask: string, filterBadAlgs: boolean }) {
+export default function CaseCard({ state }: { state: number }) {
   const [solutions, setSolutions] = React.useState([] as any[]);
+  const px = usePyraminxStore((state) => state.pyraminXolver);
+  const {
+    slack,
+    scorer,
+    filterBadAlgs,
+  } = usePyraSettingsStore((state) => state);
 
   React.useEffect(() => {
     if (!px) return;
@@ -52,11 +60,8 @@ export default function CaseCard({ state, px, pyra, scorer, slack, title, mask, 
       <CardContent sx={{ flexGrow: 1 }}>
         <SolutionsList
           solutions={px.search(state, slack).sort((a: any, b: any) => scorers[scorer](parseAlg(a[0])) - scorers[scorer](parseAlg(b[0])))}
-          scorer={scorer}
           state={state}
-          pyra={pyra}
           displayAlg={displayAlg}
-          filterBadAlgs={filterBadAlgs}
         ></SolutionsList>
       </CardContent>
     </Card>

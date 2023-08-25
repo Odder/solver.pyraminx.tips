@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
 import Slider from '@mui/material/Slider';
@@ -7,9 +6,17 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import { FormControlLabel, FormGroup, Stack, Switch, Typography } from '@mui/material';
+import usePyraSettingsStore from '../stores/usePyraSettingsStore';
 
-export default function SolverSettingsForm({ setSlack, setScorer, setFilterBadAlgs, scorer, slack, filterBadAlgs }: { setSlack: (slack: number) => void, setScorer: (scorer: string) => void, setFilterBadAlgs: (filter: boolean) => void, scorer: string, slack: number, filterBadAlgs: boolean }) {
-
+export default function SolverSettingsForm() {
+  const {
+    slack,
+    setSlack,
+    scorer,
+    setScorer,
+    filterBadAlgs,
+    setFilterBadAlgs,
+  } = usePyraSettingsStore((state) => state);
 
   return (
     <Stack direction="row">
