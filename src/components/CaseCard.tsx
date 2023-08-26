@@ -6,14 +6,15 @@ import CardMedia from '@mui/material/CardMedia';
 import SolutionsList from './SolutionsList';
 import usePyraminxStore from '../stores/usePyraminxStore';
 import usePyraSettingsStore from '../stores/usePyraSettingsStore';
+import { Typography } from '@mui/material';
+import { inverseAlg } from '../services/pyraminxolver/algs';
 
-export default function CaseCard({ state }: { state: number }) {
+export default function CaseCard({ state, title }: { state: number, title: string }) {
   const [solutions, setSolutions] = React.useState([] as any[]);
   const px = usePyraminxStore((state) => state.pyraminXolver);
   const {
     slack,
     scorer,
-    filterBadAlgs,
   } = usePyraSettingsStore((state) => state);
 
   React.useEffect(() => {
@@ -38,9 +39,28 @@ export default function CaseCard({ state }: { state: number }) {
     twisty.play();
   }
 
+
+  React.useEffect(() => {
+    const twisty = document.getElementById(`twisty-player-${state}`) as any;
+    if (twisty) {
+      let callback: any;
+      twisty?.experimentalModel?.coarseTimelineInfo.addFreshListener(async (info: any) => {
+        if (info.atEnd && !info.atStart && info.playing === false) {
+          if (callback) {
+            clearTimeout(callback);
+          }
+          callback = () => {
+            twisty.timestamp = 0;
+          }
+          setTimeout(callback, 700);
+        }
+      });
+    }
+  }, [px]);
+
   return (
     <Card
-      sx={{ height: '100%', display: 'flex', flexDirection: 'row' }}
+      sx={{ height: '100%', display: 'flex', flexDirection: 'row', width: '100%' }}
     >
       <CardMedia
         component="twisty-player"
@@ -58,12 +78,20 @@ export default function CaseCard({ state }: { state: number }) {
       // experimental-stickering-mask-orbits={mask}
       />
       <CardContent sx={{ flexGrow: 1 }}>
+        <Typography gutterBottom variant="h5" component="h2">
+          {title}
+        </Typography>
+        {solutions && solutions[0] && solutions[0][0] &&
+          <Typography variant="body2" color="text.secondary">
+            Setup: {inverseAlg(solutions[0][0])}
+          </Typography>
+        }
         <SolutionsList
           solutions={px.search(state, slack).sort((a: any, b: any) => scorers[scorer](parseAlg(a[0])) - scorers[scorer](parseAlg(b[0])))}
           state={state}
           displayAlg={displayAlg}
         ></SolutionsList>
       </CardContent>
-    </Card>
+    </Card >
   );
 }

@@ -2,17 +2,14 @@ import * as React from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { Checkbox, Drawer, FormControlLabel, FormGroup, Pagination, Stack, Switch, TextField, Toolbar } from '@mui/material';
-import { scorers, parseAlg } from '../services/scorers/all';
+import { Pagination, Stack } from '@mui/material';
 import App from './App';
 import HelpIcon from '@mui/icons-material/Help';
 import Navigation from '../components/Navigation';
-import SolverSettingsForm from '../components/SolverSettingsForm';
 import CaseCard from '../components/CaseCard';
 import SetStatisticsDialog from '../components/SetStatisticsDialog';
 import { useSearchParams } from 'react-router-dom';
 import PyraState from '../services/pyrastate/pyrastate';
-import usePyraminxStore from '../stores/usePyraminxStore';
 import useSetSolverStore from '../stores/useSetSolverStore';
 import usePyraSettingsStore from '../stores/usePyraSettingsStore';
 import ConfigurationDrawer from '../components/SetSolver/ConfigurationDrawer';
@@ -20,12 +17,9 @@ import ConfigurationDrawer from '../components/SetSolver/ConfigurationDrawer';
 
 export default function SetSolverPage() {
   const [params, setParams] = useSearchParams();
-  const [caseMask, setCaseMask] = React.useState<string>('');
-  const [solutions, setSolutions] = React.useState([] as any[]);
   const [page, setPage] = React.useState(parseInt(params.get('slack') ?? '1'));
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
-  const px = usePyraminxStore((state: any) => state.pyraminXolver);
   const {
     fixedEdges,
     fixedCenters,
@@ -64,7 +58,7 @@ export default function SetSolverPage() {
       <Navigation></Navigation>
       <ConfigurationDrawer></ConfigurationDrawer>
       <Container maxWidth="sm">
-        <Stack direction="column" spacing={4}>
+        <Stack direction="column" alignItems="center" spacing={4}>
           <Typography variant="h4" component="h1" gutterBottom textAlign="center">
             Set Solver
           </Typography>
@@ -78,14 +72,15 @@ export default function SetSolverPage() {
               cases={cases}
               handleClose={() => setDialogOpen(false)}></SetStatisticsDialog>
           </Box>
-          {cases.length > 10 && <Pagination count={Math.ceil(cases.length / 10)} page={page} onChange={handlePageChange} />}
-          {cases.slice((page - 1) * 10, (page) * 10).map((state, index) => (
+          {cases.length > 20 && <Pagination count={Math.ceil(cases.length / 20)} page={page} onChange={handlePageChange} />}
+          {cases.slice((page - 1) * 20, (page) * 20).map((state, index) => (
             <CaseCard
               key={state}
               state={state}
+              title={`Case ${index + 1 + (page - 1) * 20}`}
             ></CaseCard>
           ))}
-          {cases.length > 10 && <Pagination count={Math.ceil(cases.length / 10)} page={page} onChange={handlePageChange} />}
+          {cases.length > 20 && <Pagination count={Math.ceil(cases.length / 20)} page={page} onChange={handlePageChange} sx={{ width: '100%' }} />}
         </Stack>
       </Container >
     </App >

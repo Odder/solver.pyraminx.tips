@@ -2,8 +2,7 @@ import * as React from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import pyraminxolver from '../services/pyraminxolver/pyraminxolver';
-import pyraminx, { Properties } from '../services/pyraminxolver/pyraminx';
+import { Properties } from '../services/pyraminxolver/pyraminx';
 import TextField from '@mui/material/TextField';
 import { Chip, Drawer, FormControlLabel, FormGroup, Stack, Switch, Toolbar } from '@mui/material';
 import { scorers, parseAlg } from '../services/scorers/all';
@@ -15,13 +14,8 @@ import usePyraminxStore from '../stores/usePyraminxStore';
 import usePyraSettingsStore from '../stores/usePyraSettingsStore';
 
 export default function SingleSolverPage() {
-  // const [scramble, setScramble] = React.useState('');
-  // const [slack, setSlack] = React.useState(0);
   const [solutions, setSolutions] = React.useState([] as any[]);
-  // const [scorer, setScorer] = React.useState('Home Grip' as string);
   const [stateIdx, setStateIdx] = React.useState(0 as number);
-  // const [filterComputerSolves, setFilterComputerSolves] = React.useState(false);
-  // const [filterBadAlgs, setFilterBadAlgs] = React.useState(false);
 
   const {
     setup: scramble,
@@ -167,13 +161,7 @@ export default function SingleSolverPage() {
               }}
                 inputProps={{ style: { textTransform: "uppercase" } }} />
             </Box>
-            <SolverSettingsForm
-              scorer={scorer}
-              slack={slack}
-              setScorer={setScorer}
-              setSlack={setSlack}
-              filterBadAlgs={false}
-              setFilterBadAlgs={() => { }}></SolverSettingsForm>
+            <SolverSettingsForm></SolverSettingsForm>
             <Box>
               <Stack direction="row" justifyContent="center" spacing={2}>
                 {Object.keys(Properties).map((key) => {
@@ -186,9 +174,7 @@ export default function SingleSolverPage() {
           </Stack>
           <SolutionsList
             solutions={solutions}
-            scorer={scorer}
             state={stateIdx}
-            filterComputerSolves={filterComputerSolves}
             displayAlg={displayAlg}></SolutionsList>
         </Stack>
       </Container >
