@@ -28,7 +28,6 @@ type state = {
 }
 
 const decoder = (rawState: string): state => {
-  console.log('decoder')
   const state = decode64(rawState);
   switch (state[0]) {
     case 0:
@@ -79,7 +78,6 @@ const decoderV1 = (rawState: string): state => {
 
 const encoderV1 = (rawState: state) => {
   const state = [];
-  console.log('encoder')
 
   state.push(0);
   state.push(rawState.fixedEdges.reduce((acc, x, i) => acc + (x << i), 0));

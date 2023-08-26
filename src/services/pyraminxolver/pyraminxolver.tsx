@@ -3,7 +3,7 @@ import { Graph } from './pyraminx'
 export default () => {
   const movesMap = ["U", "U'", "R", "R'", "L", "L'", "B", "B'"]
 
-  const search = (idx: number, maxSlack = 0) => {
+  const search = (idx: number, maxSlack = 0, maxSolutions = 10000) => {
     const solutions = []
     const queue: any[] = []
 
@@ -32,6 +32,9 @@ export default () => {
       }
       else {
         solutions.push([parseMoves(moves), moves.length, visited])
+        if (solutions.length >= maxSolutions) {
+          break
+        }
       }
     }
 
@@ -39,12 +42,15 @@ export default () => {
   }
 
   const scrambleToState = (scramble: string) => {
-    const moves = scramble.split(' ')
+    const cleanScramble = scramble.replace(/\s+/g, ' ')
+    const moves = cleanScramble.split(' ')
+    // console.info('scrambleToState', cleanScramble, moves)
     let moveIdx
     let idx = 0
     for (const move of moves) {
       moveIdx = movesMap.indexOf(move) + 1
       idx = Graph[idx][moveIdx]
+      // console.info('move', move, moveIdx, idx)
     }
 
     return idx

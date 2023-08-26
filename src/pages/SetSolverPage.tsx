@@ -13,6 +13,9 @@ import PyraState from '../services/pyrastate/pyrastate';
 import useSetSolverStore from '../stores/useSetSolverStore';
 import usePyraSettingsStore from '../stores/usePyraSettingsStore';
 import ConfigurationDrawer from '../components/SetSolver/ConfigurationDrawer';
+import GroupedCaseCard from '../components/GroupedCaseCard';
+import { groupBySymmetries } from '../services/pyraminxolver/set';
+import usePyraminxStore from '../stores/usePyraminxStore';
 
 
 export default function SetSolverPage() {
@@ -20,10 +23,14 @@ export default function SetSolverPage() {
   const [page, setPage] = React.useState(parseInt(params.get('slack') ?? '1'));
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
+  const px = usePyraminxStore((state) => state.pyraminXolver);
+
   const {
     fixedEdges,
     fixedCenters,
     cases,
+    groups,
+    groupBySymmetries: shouldGroup,
   } = useSetSolverStore((state) => state);
 
   const {
@@ -64,7 +71,7 @@ export default function SetSolverPage() {
           </Typography>
           <Box>
             <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
-              <Typography variant="h6" component="h5" gutterBottom textAlign="center">{cases.length} cases</Typography>
+              <Typography variant="h6" component="h5" gutterBottom textAlign="center">{shouldGroup ? groups.length : cases.length} cases</Typography>
               <HelpIcon onClick={() => setDialogOpen(true)} sx={{ cursor: 'pointer' }}></HelpIcon>
             </Stack>
             <SetStatisticsDialog
@@ -72,15 +79,24 @@ export default function SetSolverPage() {
               cases={cases}
               handleClose={() => setDialogOpen(false)}></SetStatisticsDialog>
           </Box>
-          {cases.length > 20 && <Pagination count={Math.ceil(cases.length / 20)} page={page} onChange={handlePageChange} />}
-          {cases.slice((page - 1) * 20, (page) * 20).map((state, index) => (
+          {!shouldGroup && cases.length > 15 && <Pagination count={Math.ceil(cases.length / 15)} page={page} onChange={handlePageChange} />}
+          {!shouldGroup && cases.slice((page - 1) * 15, (page) * 15).map((state, index) => (
             <CaseCard
               key={state}
               state={state}
-              title={`Case ${index + 1 + (page - 1) * 20}`}
+              title={`Case ${index + 1 + (page - 1) * 15}`}
             ></CaseCard>
           ))}
-          {cases.length > 20 && <Pagination count={Math.ceil(cases.length / 20)} page={page} onChange={handlePageChange} sx={{ width: '100%' }} />}
+          {!shouldGroup && cases.length > 15 && <Pagination count={Math.ceil(cases.length / 15)} page={page} onChange={handlePageChange} sx={{ width: '100%' }} />}
+          {shouldGroup && groups.length > 15 && <Pagination count={Math.ceil(groups.length / 15)} page={page} onChange={handlePageChange} />}
+          {shouldGroup && groups.slice((page - 1) * 15, (page) * 15).map((states: number[], index: number) => (
+            <GroupedCaseCard
+              key={states[0]}
+              states={states}
+              title={`Case ${index + 1 + (page - 1) * 15}`}
+            ></GroupedCaseCard>
+          ))}
+          {shouldGroup && groups.length > 15 && <Pagination count={Math.ceil(groups.length / 15)} page={page} onChange={handlePageChange} sx={{ width: '100%' }} />}
         </Stack>
       </Container >
     </App >

@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Box, Checkbox, Drawer, FormControlLabel, FormGroup, Stack, TextField, Toolbar, Typography } from '@mui/material';
+import { Box, Checkbox, Drawer, FormControlLabel, FormGroup, Stack, Switch, TextField, Toolbar, Typography } from '@mui/material';
 import useSetSolverStore from '../../stores/useSetSolverStore';
 import usePyraSettingsStore from '../../stores/usePyraSettingsStore';
 import usePyraminxStore from '../../stores/usePyraminxStore';
 import SolverSettingsForm from '../SolverSettingsForm';
+import { generateSet, groupBySymmetries } from '../../services/pyraminxolver/set';
 
 export default function ConfigurationDrawer() {
   const {
@@ -13,8 +14,11 @@ export default function ConfigurationDrawer() {
     setFixedCenters,
     stateIdx,
     setCases,
+    setGroups,
     setCaseMask,
     setStateIdx,
+    groupBySymmetries: shouldGroup,
+    setGroupBySymmetries: setShouldGroup,
   } = useSetSolverStore((state) => state);
 
   const {
@@ -33,13 +37,11 @@ export default function ConfigurationDrawer() {
   React.useEffect(() => {
     if (!px) return;
     const solutions = px.search(stateIdx, 0);
-    console.log('solutions', solutions[0]);
     setSolution(solutions[0]);
   }, [stateIdx]);
 
   React.useEffect(() => {
     if (!px) return;
-    console.log('scramble', scramble)
     setStateIdx(px.scrambleToState(scramble.trim().toUpperCase()));
   }, [scramble, px]);
 
@@ -61,7 +63,8 @@ export default function ConfigurationDrawer() {
     setCaseMask(mask.replace(/-/g, 'D').replace(/I/g, '-'));
     twisty.experimentalStickeringMaskOrbits = mask;
 
-    setCases(pyra.generateSet(
+    const cases = generateSet(
+      pyra,
       {
         eo: fixedEdges.map((value) => value ? 0 : -1),
         ep: fixedEdges.map((value, i) => value ? i : -1),
@@ -69,7 +72,10 @@ export default function ConfigurationDrawer() {
       },
       stateIdx,
       // groupBySymmetry
-    ));
+    );
+    setCases(cases);
+    setGroups(groupBySymmetries(px, cases));
+
   }, [fixedEdges, fixedCenters, stateIdx, px]);
 
 
@@ -138,7 +144,7 @@ export default function ConfigurationDrawer() {
               <FormGroup>
                 <Typography variant="h6" component="h1" gutterBottom textAlign="center">Centers</Typography>
                 <Stack direction="row" alignItems="center" justifyContent="center">
-                  <FormControlLabel control={<Checkbox checked={!!fixedCenters[0]} onChange={handleFixedEdgesChange(0)} />} label="U" />
+                  <FormControlLabel control={<Checkbox checked={!!fixedCenters[0]} onChange={handleFixedCentersChange(0)} />} label="U" />
                   <FormControlLabel control={<Checkbox checked={!!fixedCenters[1]} onChange={handleFixedCentersChange(1)} />} label="R" />
                   <FormControlLabel control={<Checkbox checked={!!fixedCenters[2]} onChange={handleFixedCentersChange(2)} />} label="L" />
                   <FormControlLabel control={<Checkbox checked={!!fixedCenters[3]} onChange={handleFixedCentersChange(3)} />} label="B" />
@@ -147,21 +153,21 @@ export default function ConfigurationDrawer() {
             </Stack>
           </Box>
           <SolverSettingsForm />
-          {/* <FormGroup>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={groupBySymmetry}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setGroupBySymmetry(event.target.checked) }}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                  />
-                }
-                label={
-                  <Typography variant="body2" color="text.secondary">
-                    Group by Symmetry
-                  </Typography>
-                } />
-            </FormGroup> */}
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={shouldGroup}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setShouldGroup(event.target.checked) }}
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+              }
+              label={
+                <Typography variant="body2" color="text.secondary">
+                  Group by Symmetry
+                </Typography>
+              } />
+          </FormGroup>
 
         </Stack>
       </Box>

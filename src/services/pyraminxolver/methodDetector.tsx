@@ -1,8 +1,6 @@
 import { Graph, Properties } from './pyraminx'
 
 const detect = (pyra: any, state: number, path: Array<number>) => {
-  console.log(pyra, state, path)
-
   const vFirst = (): Boolean => {
     return path.slice(0, 5).some(s => pyra.hasProperty(s, Properties.hasV));
   }
@@ -24,7 +22,6 @@ const detect = (pyra: any, state: number, path: Array<number>) => {
   // iterate over methods and return the first one that returns true
   for (const [name, detector] of methods) {
     if (detector()) {
-      console.log(name, 'method detected');
       return name;
     }
   }
