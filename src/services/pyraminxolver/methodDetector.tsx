@@ -2,18 +2,23 @@ import { Graph, Properties } from './pyraminx'
 
 const detect = (pyra: any, state: number, path: Array<number>) => {
   const vFirst = (): Boolean => {
-    return path.slice(0, 5).some(s => pyra.hasProperty(s, Properties.hasV));
+    return path.slice(0, Math.min(5, path.length - 2)).some(s => pyra.hasProperty(s, Properties.hasV));
   }
 
   const topFirst = (): Boolean => {
-    return path.slice(0, 7).some(s => pyra.hasProperty(s, Properties.hasTop));
+    return path.slice(0, Math.min(7, path.length - 2)).some(s => pyra.hasProperty(s, Properties.hasTop));
+  }
+
+  const oneFlip = (): Boolean => {
+    return path.slice(0, 4).some(s => pyra.hasProperty(s, Properties.hasOneFlip));
   }
 
   const layerByLayer = (): Boolean => {
-    return path.slice(0, 7).some(s => pyra.hasProperty(s, Properties.hasLayer));
+    return path.slice(0, Math.min(7, path.length - 2)).some(s => pyra.hasProperty(s, Properties.hasLayer));
   }
 
   const methods: Array<[string, () => Boolean]> = [
+    ['One-flip', oneFlip],
     ['Top First', topFirst],
     ['V First', vFirst],
     ['LBL', layerByLayer],

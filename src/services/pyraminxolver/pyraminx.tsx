@@ -239,6 +239,12 @@ export const Properties: { [key: string]: mask[]; } = {
     (s: any) => s.ep[2] == 2 && s.ep[4] == 4 && s.ep[5] == 5 && s.eo[2] == 0 && s.eo[4] == 0 && s.eo[5] == 0 && s.co[0] == 0 && s.co[1] == 0 && s.co[2] == 0 && s.co[3] == 0, // L
     (s: any) => s.ep[0] == 0 && s.ep[3] == 3 && s.ep[5] == 5 && s.eo[0] == 0 && s.eo[3] == 0 && s.eo[5] == 0 && s.co[0] == 0 && s.co[1] == 0 && s.co[2] == 0 && s.co[3] == 0, // B
   ],
+  hasOneFlip: [
+    (s: any) => s.ep[0] == 0 && s.ep[1] == 1 && s.ep[2] == 2 && s.eo[0] + s.eo[1] + s.eo[2] == 1 && s.co[0] == 0, // U
+    (s: any) => s.ep[1] == 1 && s.ep[3] == 3 && s.ep[4] == 4 && s.eo[1] + s.eo[3] + s.eo[4] == 1 && s.co[1] == 0, // R
+    (s: any) => s.ep[2] == 2 && s.ep[4] == 4 && s.ep[5] == 5 && s.eo[2] + s.eo[4] + s.eo[5] == 1 && s.co[2] == 0, // L
+    (s: any) => s.ep[0] == 0 && s.ep[3] == 3 && s.ep[5] == 5 && s.eo[0] + s.eo[3] + s.eo[5] == 1 && s.co[3] == 0, // B
+  ],
   hasLayer: [
     (s: any) => s.ep[3] == 3 && s.ep[4] == 4 && s.ep[5] == 5 && s.eo[3] == 0 && s.eo[4] == 0 && s.eo[5] == 0 && s.co[1] == 0 && s.co[2] == 0 && s.co[3] == 0, // opp-U
     (s: any) => s.ep[0] == 0 && s.ep[2] == 2 && s.ep[5] == 5 && s.eo[0] == 0 && s.eo[2] == 0 && s.eo[5] == 0 && s.co[0] == 0 && s.co[2] == 0 && s.co[3] == 0, // opp-R

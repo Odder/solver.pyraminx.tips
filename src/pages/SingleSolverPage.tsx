@@ -23,8 +23,6 @@ export default function SingleSolverPage() {
     scorer,
     filterComputerSolves,
     setSetup: setScramble,
-    setSlack,
-    setScorer,
     setFilterComputerSolves,
   } = usePyraSettingsStore((state) => state);
 

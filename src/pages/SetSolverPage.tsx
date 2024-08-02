@@ -14,7 +14,6 @@ import useSetSolverStore from '../stores/useSetSolverStore';
 import usePyraSettingsStore from '../stores/usePyraSettingsStore';
 import ConfigurationDrawer from '../components/SetSolver/ConfigurationDrawer';
 import GroupedCaseCard from '../components/GroupedCaseCard';
-import { groupBySymmetries } from '../services/pyraminxolver/set';
 import usePyraminxStore from '../stores/usePyraminxStore';
 
 
